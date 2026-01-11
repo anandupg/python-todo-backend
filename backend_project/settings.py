@@ -84,6 +84,9 @@ DATABASES = {
     }
 }
 
+# MongoDB Configuration
+MONGO_URI = 'mongodb+srv://anandupganesh_db_user:hlQqe1mNbyD1RSR0@todo.w5atfjv.mongodb.net/?appName=todo'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
