@@ -8,22 +8,33 @@ from datetime import datetime
 
 class TodoListCreate(APIView):
     def get(self, request):
+        if todos_collection is None:
+            return Response({"error": "Database not available"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            
         todos = []
-        for doc in todos_collection.find():
-            doc['id'] = str(doc['_id'])
-            todos.append(doc)
-        serializer = TodoSerializer(todos, many=True)
-        return Response(serializer.data)
+        try:
+            for doc in todos_collection.find():
+                doc['id'] = str(doc['_id'])
+                todos.append(doc)
+            serializer = TodoSerializer(todos, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
+        if todos_collection is None:
+            return Response({"error": "Database not available"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
         serializer = TodoSerializer(data=request.data)
         if serializer.is_valid():
             todo_data = serializer.validated_data
             todo_data['created_at'] = datetime.now()
-            result = todos_collection.insert_one(todo_data)
-            
-            todo_data['id'] = str(result.inserted_id)
-            return Response(TodoSerializer(todo_data).data, status=status.HTTP_201_CREATED)
+            try:
+                result = todos_collection.insert_one(todo_data)
+                todo_data['id'] = str(result.inserted_id)
+                return Response(TodoSerializer(todo_data).data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TodoRetrieveUpdateDestroy(APIView):
