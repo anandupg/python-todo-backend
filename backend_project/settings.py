@@ -85,7 +85,7 @@ DATABASES = {
 }
 
 # MongoDB Configuration
-MONGO_URI = 'mongodb+srv://anandupganesh_db_user:hlQqe1mNbyD1RSR0@todo.w5atfjv.mongodb.net/?appName=todo'
+MONGO_URI = os.environ.get('MONGO_URI')
 
 
 # Password validation
